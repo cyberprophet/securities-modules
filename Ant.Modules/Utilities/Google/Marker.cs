@@ -1,5 +1,5 @@
-﻿using ShareInvest.Entities.Google;
-using ShareInvest.Entities.Google.Maps;
+﻿using ShareInvest.Entities.Google.Maps;
+using ShareInvest.Services.Google;
 
 using System.Drawing;
 
@@ -7,7 +7,18 @@ namespace ShareInvest.Utilities.Google;
 
 public static class Marker
 {
-    public static object MakeStockMarker(CoordinateStock stock)
+    public static string MakeSignAccording(string? compareToPreviousSign)
+    {
+        return compareToPreviousSign switch
+        {
+            "2" => "<span class=\"oi oi-caret-top oi-padding\" ></span>",
+            "5" => "<span class=\"oi oi-caret-bottom oi-padding\" ></span>",
+            "1" => "<span class=\"oi oi-arrow-thick-top oi-padding\" ></span>",
+            "4" => "<span class=\"oi oi-arrow-thick-bottom oi-padding\" ></span>",
+            _ => string.Empty
+        };
+    }
+    public static object MakeStockMarker(MapStock stock)
     {
         var background = stock.CompareToPreviousSign switch
         {
@@ -32,32 +43,22 @@ public static class Marker
             },
             glyphColor = Color.WhiteSmoke,
             name = stock.Name,
-            code = stock.Code
+            code = stock.Code,
+            html = string.Concat(MakeSignAccording(stock.CompareToPreviousSign), stock.CompareToPreviousDay.ToString("N0")),
+            after = stock.Current.ToString("N0"),
+            before = stock.Rate.ToString("P2")
         };
     }
     public static string GetMarkerImageUrl(string? url, string color)
     {
         return Path.Combine(url ?? "http://share.enterprises", "images", "pins", $"pin_{color}.png");
     }
-    public static bool HasCenterChanged(string eventName, MapStatus status)
+    public static bool HasCenterChanged(MapEventName eventName, MapStatus currentMapStatus, MapStatus previousMapStatus)
     {
-        if (Enum.TryParse(eventName, out MapEvent mapEvent) && MapEvent.zoom_changed == mapEvent)
+        if (MapEventName.heading_changed == eventName || MapEventName.tilt_changed == eventName)
         {
             return true;
         }
-        var hasCenterChanged = (status.Center.Lng == Longitude && status.Center.Lat == Latitude) is false;
-
-        Longitude = status.Center.Lng;
-        Latitude = status.Center.Lat;
-
-        return hasCenterChanged;
-    }
-    static double Longitude
-    {
-        get; set;
-    }
-    static double Latitude
-    {
-        get; set;
+        return currentMapStatus.Center.Lng != previousMapStatus.Center.Lng || currentMapStatus.Center.Lat != previousMapStatus.Center.Lat;
     }
 }
