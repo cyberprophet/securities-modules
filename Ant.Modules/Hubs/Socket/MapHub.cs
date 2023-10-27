@@ -42,31 +42,27 @@ public class MapHub : IEventHandler<MsgEventArgs>
             })
             .ConfigureLogging(configureLogging =>
             {
-                configureLogging.SetMinimumLevel(LogLevel.Debug);
+                configureLogging.SetMinimumLevel(LogLevel.Trace);
             })
             .WithAutomaticReconnect(new[]
             {
                 TimeSpan.Zero,
                 TimeSpan.FromSeconds(3),
-                TimeSpan.FromSeconds(5),
-                TimeSpan.FromSeconds(7),
-                TimeSpan.FromSeconds(9)
+                TimeSpan.FromSeconds(9),
+                TimeSpan.FromSeconds(0x10),
+                TimeSpan.FromSeconds(0x20)
             })
             .Build();
 
-        OnReceiveHubMethod();
+        TransmitConclusionInformation = Hub.On<string, string>(nameof(IHubs.TransmitConclusionInformationAsync), (code, data) => Send?.Invoke(this, new HubMsgEventArgs(code, data.Split('\t'))));
     }
     public HubConnection Hub
     {
         get;
     }
-    public event EventHandler<MsgEventArgs>? Send;
-
-    void OnReceiveHubMethod()
+    public IDisposable TransmitConclusionInformation
     {
-        _ = Hub.On<string, string>(nameof(IHubs.TransmitConclusionInformationAsync), (code, data) =>
-        {
-            Send?.Invoke(this, new HubMsgEventArgs(code, data.Split('\t')));
-        });
+        get;
     }
+    public event EventHandler<MsgEventArgs>? Send;
 }
