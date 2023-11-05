@@ -1,7 +1,5 @@
 ﻿using Newtonsoft.Json.Linq;
 
-using ShareInvest.OpenAPI.Entity;
-
 using System.Diagnostics;
 using System.Reflection;
 using System.Text;
@@ -31,43 +29,20 @@ public static partial class Parameter
             }
         }
     }
-    public static IEnumerable<TR> GetInventoryOnConditions(IEnumerable<string> enumerable)
+    public static string TransformQuery(JToken token, StringBuilder query)
     {
-        int index = 0;
-        var sb = new StringBuilder(0x100);
-        var codeStack = new Stack<StringBuilder>(0x10);
+        query.Append('?');
 
-        foreach (var code in enumerable)
-        {
-            if (string.IsNullOrEmpty(code) is false)
+        foreach (var j in token.Children<JProperty>())
+
+            if (JTokenType.Null != j.Value.Type)
             {
-                if (index++ % 0x63 == 0x62)
-                {
-                    codeStack.Push(sb.Append(code));
-
-                    sb = new StringBuilder();
-                }
-                sb.Append(code).Append(';');
+                query.Append(j.Path);
+                query.Append('=');
+                query.Append(j.Value);
+                query.Append('&');
             }
-        }
-        codeStack.Push(sb.Remove(sb.Length - 1, 1));
-
-        while (codeStack.TryPop(out StringBuilder? pop))
-        {
-            if (pop is not null && pop.Length > 5)
-            {
-                var listOfStocks = pop.ToString();
-
-                yield return new OPTKWFID
-                {
-                    Value = new[]
-                    {
-                        listOfStocks
-                    },
-                    PrevNext = listOfStocks.Split(';').Length
-                };
-            }
-        }
+        return TransformOutbound(query.Remove(query.Length - 1, 1).ToString());
     }
     public static string TransformQuery(JToken token)
     {

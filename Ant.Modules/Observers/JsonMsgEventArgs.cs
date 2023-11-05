@@ -21,9 +21,11 @@ public class JsonMsgEventArgs : MsgEventArgs
 
             Opw00005 => deserializeOPW5(json),
 
+            Opt10081 => JsonConvert.DeserializeObject<MultiOpt10081>(json),
+
             OPTKWFID => JsonConvert.DeserializeObject<Entities.Kiwoom.OPTKWFID>(json),
 
-            _ => throw new InvalidCastException($"{tr.TrCode} can't be cast.")
+            _ => JsonConvert.DeserializeObject(json, tr.GetType())
         };
     }
     public JsonMsgEventArgs(TR tr)
