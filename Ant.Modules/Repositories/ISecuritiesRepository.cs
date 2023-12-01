@@ -18,7 +18,11 @@ public interface ISecuritiesRepository
 
     Task<int> RegisterUserAsync(Securities securities);
 
+    Task<int> RegisterPositionAsync(Entities.Position position);
+
     Task<int> SaveChangesAsync(MultiOpt10081 dailyChart);
+
+    Task<int> SaveChangesAsync(Entities.Kiwoom.Opt10004 stockQuote);
 
     Task<int> RecordsCommunicationsWithSecuritiesCorpAsync(OpenMessage message);
 
@@ -36,11 +40,13 @@ public interface ISecuritiesRepository
 
     Task<string?> GetStockNameAsync(string code);
 
+    Task<Entities.Kiwoom.Opt10004?> GetStockQuoteAsync(string code);
+
+    Task<AntStock[]> GetListByCompareToPreviousVolumeAsync(string latestDate);
+
     AntStock[] GetListByRate(string latestDate);
 
     AntStock[] GetListByListingDate(string latestDate);
-
-    AntStock[] GetListByCompareToPreviousVolume(string latestDate);
 
     AntStock[] GetListByMarketCap(string latestDate);
 
@@ -50,7 +56,9 @@ public interface ISecuritiesRepository
 
     IEnumerable<DailyChart> GetDailyChart(string code, string date, int period);
 
-    string? GetCodeToLookUpNext(string date);
+    string? GetCodeToLookUpNextDailyChart(string date);
+
+    string? GetCodeToLookUpNextStockQuote(string date);
 
     int LiquidateStocksHeld(ChejanBalance balance);
 
@@ -58,11 +66,13 @@ public interface ISecuritiesRepository
 
     Log[]? GetOpenMessagesByUserId(string userId, long ticks);
 
-    AntStockChat[] ContinuouslyViewChat(string code, long ticks);
+    AntStockChat[] ContinuouslyViewChat(string? id, string code, long ticks);
 
-    AntStockChat[] ContinuouslyViewChat(string code);
+    AntStockChat[] ContinuouslyViewChat(string? id, string code);
 
     AssetStatusBalance[] GetKiwoomBalances(string accNo, string date);
 
     AssetStatusChart[] GetPresumeAssetTrend(string accNo);
+
+    CoordinateUser[] GetClientApps(Point point, double distance, string? userName = null);
 }
