@@ -8,7 +8,7 @@ public interface IHubs
 
     Task RemoveFromGroupAsync(string groupName);
 
-    Task TransmitMarkerAsync(object marker);
+    Task TransmitMarkerAsync(DateTime dateTime, bool position);
 
     Task TransmitFuturesQuoteAsync(Quote quote, bool moreThanBefore);
 
@@ -20,7 +20,11 @@ public interface IHubs
 
     Task InstructToRenewAssetStatusAsync(string accNo);
 
+    Task InstructToRenewBalanceAsync(string accNo);
+
     Task EventOccursInStockAsync(string code);
 
     Task SendMessageAsync(string image, string name, string dt, string message, string code, string token);
+
+    Task SendFuturesOrderAsync(OpenAPI.OrderFO orderFO);
 }

@@ -46,9 +46,13 @@ public interface ISecuritiesRepository
 
     Task<string> GetSimulationDataAsync(string code, string date);
 
+    Task<byte[]> GetSimulationDataFileAsync(string code, string date);
+
     Task<Entities.Kiwoom.Opt10004?> GetStockQuoteAsync(string code);
 
     Task<AntStock[]> GetListByCompareToPreviousVolumeAsync(string latestDate);
+
+    AntFutures[] GetFutures(string latestDate);
 
     AntStock[] GetListByRate(string latestDate);
 
@@ -94,5 +98,9 @@ public interface ISecuritiesRepository
 
     CoordinateUser[] GetClientApps(Point point, double distance, string? userName = null);
 
+    Indicators[] GetStrategicsScenario();
+
     Entities.Kiwoom.Opt50029[] GetFuturesMinuteChart(string code, string? dateTime, int period = 0x400);
+
+    Entities.Kiwoom.Opt50029[] GetFuturesMinuteChart(string code, string startDate, string endDate);
 }

@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
 using ShareInvest.Observers;
+using ShareInvest.OpenAPI;
 using ShareInvest.Properties;
 
 namespace ShareInvest.Hubs.Socket;
@@ -52,7 +53,11 @@ public class KiwoomHub
 
         _ = Hub.On<string>(nameof(IHubs.InstructToRenewAssetStatusAsync), accNo => Send?.Invoke(this, new AssetsEventArgs(accNo)));
 
+        _ = Hub.On<string>(nameof(IHubs.InstructToRenewBalanceAsync), accNo => Send?.Invoke(this, new RenewBalanceArgs(accNo)));
+
         _ = Hub.On<string>(nameof(IHubs.EventOccursInStockAsync), code => Send?.Invoke(this, new OccursInStockEventArgs(code)));
+
+        _ = Hub.On<OrderFO>(nameof(IHubs.SendFuturesOrderAsync), orderFO => Send?.Invoke(this, new OrderFOArgs(orderFO)));
     }
     public event EventHandler<MsgEventArgs>? Send;
 }

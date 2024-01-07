@@ -12,7 +12,7 @@ public class Futures
             {
                 return 0;
             }
-            return Balance.Code[2] == '1' ? kospiTransactionMultiplier : kosdaqTransactionMultiplier;
+            return Balance.Code[2] == '1' ? Service.KospiTransactionMultiplier : Service.KosdaqTransactionMultiplier;
         }
     }
     public Simulation Balance
@@ -51,18 +51,16 @@ public class Futures
             }
             return double.NegativeZero;
         }
-        Balance.CumulativeRevenue += (long)(TransactionMultiplier * liquidateReserves() - commission * transactionPrice * TransactionMultiplier);
+        Balance.CumulativeRevenue += (long)(TransactionMultiplier * liquidateReserves() - Service.Commission * transactionPrice * TransactionMultiplier);
         Balance.HoldingQuantity += quantity;
     }
-    public Futures(string code, string date)
+    public Futures(string code, string date, string? strategics = null)
     {
         Balance = new Simulation
         {
             Code = code,
-            Date = date
+            Date = date,
+            Strategics = strategics ?? string.Empty
         };
     }
-    const int kospiTransactionMultiplier = 250_000;
-    const int kosdaqTransactionMultiplier = 10_000;
-    const double commission = 3e-5;
 }
